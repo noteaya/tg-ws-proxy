@@ -1,11 +1,15 @@
 (function () {
   var STATUS_INTERVAL_MS = 2000;
-  var api = window.pywebview && window.pywebview.api;
+  var api = null;
   var statusEl = document.getElementById("status-text");
   var checkResultEl = document.getElementById("check-result");
   var statusTimer = null;
   var toastContainer = document.getElementById("toast-container");
   var bannerStartup = document.getElementById("banner-startup");
+
+  function getApi() {
+    return window.pywebview && window.pywebview.api;
+  }
 
   function showScreen(id) {
     var screens = document.querySelectorAll(".screen");
@@ -86,8 +90,9 @@
   }
 
   function loadSettingsForm() {
-    if (!api || !api.get_config) return;
-    api.get_config().then(function (c) {
+    var a = api || getApi();
+    if (!a || typeof a.get_config !== "function") return;
+    a.get_config().then(function (c) {
       document.getElementById("settings-host").value = c.host || "";
       document.getElementById("settings-port").value = c.port || 1080;
       document.getElementById("settings-dc").value = (c.dc_ip || []).join("\n");
@@ -202,12 +207,11 @@
 
   function init() {
     applyHash();
-
-    if (!api) {
+    api = getApi();
+    if (!api || typeof api.get_status !== "function") {
       if (statusEl) statusEl.textContent = "Прокси запущен";
       return;
     }
-
     bindButtons();
 
     api.get_startup_error().then(function (err) {
@@ -239,9 +243,19 @@
     if (getHash() === "settings") loadSettingsForm();
   }
 
+  function runWhenReady() {
+    if (getApi() && typeof getApi().get_status === "function") {
+      init();
+      return;
+    }
+    window.addEventListener("pywebviewready", function onReady() {
+      window.removeEventListener("pywebviewready", onReady);
+      init();
+    });
+  }
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init);
+    document.addEventListener("DOMContentLoaded", runWhenReady);
   } else {
-    init();
+    runWhenReady();
   }
 })();
