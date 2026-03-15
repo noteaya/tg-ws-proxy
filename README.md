@@ -18,7 +18,9 @@
   
 **Ожидаемый результат аналогичен прокидыванию hosts для Web Telegram**: ускорение загрузки и скачивания файлов, загрузки сообщений и части медиа.
 
-<img width="529" height="487" alt="image" src="https://github.com/user-attachments/assets/6a4cf683-0df8-43af-86c1-0e8f08682b62" />
+<img src="https://i.ibb.co/8LB7rZhV/image.png" width="320" alt="Скриншот 1" />
+<img src="https://i.ibb.co/JjrHn3MM/image.png" width="320" alt="Скриншот 2" />
+<img src="https://i.ibb.co/vChF5gFR/image.png" width="320" alt="Скриншот 3" />
 
 ## Отличия форка
 
