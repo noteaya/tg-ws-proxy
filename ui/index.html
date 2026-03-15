@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TG WS Proxy</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+  <div id="banner-startup" class="banner banner-error" hidden></div>
+
+  <header class="nav-header">
+    <a href="#main" class="nav-logo">TG WS Proxy</a>
+    <nav class="nav-links">
+      <a href="#main" class="nav-link">Главная</a>
+      <a href="#settings" class="nav-link">Настройки</a>
+      <a href="#about" class="nav-link">О программе</a>
+      <a href="#differences" class="nav-link">Отличия форка</a>
+    </nav>
+  </header>
+
+  <main class="app-content">
+    <section id="screen-main" class="screen">
+      <div class="header-block">
+        <span class="header-accent"></span>
+        <div>
+          <h1 class="title">TG WS Proxy</h1>
+          <p class="subtitle">Ускоряет Telegram через WebSocket</p>
+        </div>
+      </div>
+
+      <section class="card card-desc">
+        <p>Приложение поднимает локальный прокси: Telegram подключается к нему, а прокси уже ходит на серверы Telegram по WebSocket. Так обходятся ограничения сети — чаты и медиа открываются быстрее.</p>
+      </section>
+
+      <section class="card card-status">
+        <p id="status-text" class="status-text">Загрузка…</p>
+      </section>
+
+      <div id="check-result" class="check-result" hidden></div>
+
+      <section class="actions">
+        <h2 class="section-title">Действия</h2>
+        <div class="divider"></div>
+        <button type="button" class="btn btn-primary" id="btn-open-tg">Открыть в Telegram</button>
+        <button type="button" class="btn btn-secondary" id="btn-check">Проверить подключение</button>
+        <button type="button" class="btn btn-secondary" id="btn-settings-nav">Настройки</button>
+        <button type="button" class="btn btn-secondary" id="btn-logs">Открыть логи</button>
+        <button type="button" class="btn btn-secondary" id="btn-restart">Перезапустить прокси</button>
+      </section>
+
+      <footer class="footer-main">
+        <div class="footer-buttons">
+          <button type="button" class="btn btn-secondary" id="btn-minimize">Свернуть в трей</button>
+          <button type="button" class="btn btn-exit" id="btn-quit">Выход</button>
+        </div>
+        <p class="footer-credit">Оригинал: <a href="https://github.com/Flowseal/tg-ws-proxy" target="_blank" rel="noopener">Flowseal/tg-ws-proxy</a> · Форк: <a href="https://github.com/noteaya/tg-ws-proxy" target="_blank" rel="noopener">noteaya/tg-ws-proxy</a></p>
+      </footer>
+    </section>
+
+    <section id="screen-first-run" class="screen" hidden>
+      <div class="header-block">
+        <span class="header-accent"></span>
+        <div>
+          <h1 class="title">Прокси запущен</h1>
+          <p class="subtitle">Ускоряет Telegram через WebSocket. Работает в трее.</p>
+        </div>
+      </div>
+      <div class="card">
+        <h2 class="section-title">Как подключить</h2>
+        <p>ПКМ по иконке в трее → «Открыть в Telegram»</p>
+        <p id="first-run-manual" class="text-muted"></p>
+      </div>
+      <div class="card">
+        <label class="checkbox-label">
+          <input type="checkbox" id="first-run-open-tg" checked>
+          <span>Открыть настройку прокси в Telegram сейчас</span>
+        </label>
+      </div>
+      <button type="button" class="btn btn-primary" id="btn-first-run-ok">Начать</button>
+    </section>
+
+    <section id="screen-settings" class="screen" hidden>
+      <h1 class="title">Настройки</h1>
+      <div id="settings-error" class="banner banner-error" hidden></div>
+      <form id="form-settings" class="form-settings">
+        <div class="form-group">
+          <label for="settings-host">IP-адрес</label>
+          <input type="text" id="settings-host" class="input">
+        </div>
+        <div class="form-group">
+          <label for="settings-port">Порт</label>
+          <input type="number" id="settings-port" class="input" min="1" max="65535">
+        </div>
+        <div class="form-group">
+          <label for="settings-dc">DC → IP (по одному на строку)</label>
+          <span class="form-hint">Формат: 2:149.154.167.220</span>
+          <textarea id="settings-dc" class="textarea" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <button type="button" class="btn btn-secondary" id="btn-settings-check">Проверить подключение</button>
+        </div>
+        <div id="settings-check-result" class="check-result" hidden></div>
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="settings-verbose">
+            <span>Подробное логирование (verbose)</span>
+          </label>
+        </div>
+        <div class="form-group" id="form-group-startup">
+          <label class="checkbox-label">
+            <input type="checkbox" id="settings-start-with-windows">
+            <span>Запускать при входе в Windows</span>
+          </label>
+          <span id="settings-startup-hint" class="form-hint" hidden>(только в собранном приложении)</span>
+        </div>
+        <p class="text-muted">Изменения вступят в силу после перезапуска прокси.</p>
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+          <a href="#main" class="btn btn-secondary">Отмена</a>
+        </div>
+      </form>
+    </section>
+
+    <section id="screen-about" class="screen" hidden>
+      <div class="header-block">
+        <span class="header-accent"></span>
+        <div>
+          <h1 class="title">О программе</h1>
+          <p class="subtitle">TG WS Proxy</p>
+        </div>
+      </div>
+      <div class="card">
+        <p>Локальный SOCKS5-прокси для Telegram Desktop: перенаправляет трафик через WebSocket на серверы Telegram и ускоряет загрузку сообщений и медиа.</p>
+      </div>
+      <div class="card">
+        <h2 class="card-heading">Как это работает</h2>
+        <p class="flow-diagram">Telegram Desktop → SOCKS5 (127.0.0.1:1080) → TG WS Proxy → WSS (kws*.web.telegram.org) → дата-центр Telegram</p>
+        <ol class="about-steps">
+          <li>На локальном адресе 127.0.0.1:1080 поднимается SOCKS5-прокси.</li>
+          <li>Прокси принимает только подключения к IP-адресам Telegram и для остального трафика не используется.</li>
+          <li>Из первого пакета (MTProto obfuscation init) читается номер дата-центра (DC ID).</li>
+          <li>К этому дата-центру устанавливается WebSocket (TLS) через домены вида kws{N}.web.telegram.org.</li>
+          <li>Если WebSocket недоступен (например, ответ 302) — соединение идёт обычным TCP до того же DC.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <p><strong>Оригинал:</strong> <a href="https://github.com/Flowseal/tg-ws-proxy" target="_blank" rel="noopener">Flowseal/tg-ws-proxy</a> · <strong>Форк:</strong> <a href="https://github.com/noteaya/tg-ws-proxy" target="_blank" rel="noopener">noteaya/tg-ws-proxy</a></p>
+      </div>
+      <a href="#main" class="btn btn-secondary">Назад</a>
+    </section>
+
+    <section id="screen-differences" class="screen" hidden>
+      <div class="header-block">
+        <span class="header-accent"></span>
+        <div>
+          <h1 class="title">Отличия форка от оригинала</h1>
+          <p class="subtitle">Что изменено в этой сборке</p>
+        </div>
+      </div>
+      <div class="card">
+        <ul class="diff-list">
+          <li>Интерфейс на HTML/CSS/JS (WebView) вместо CustomTkinter — современный вид и навигация: Главная, Настройки, О программе, Отличия форка.</li>
+          <li>При запуске сразу открывается главное окно приложения (дашборд), а не только иконка в трее. Кнопка «Свернуть в трей» скрывает окно; из трея пункт «Открыть» снова показывает окно.</li>
+          <li>Живая статистика в трее: в подсказке иконки и в пункте меню отображаются текущие подключения (через WS / через TCP) и объём трафика.</li>
+          <li>Кнопка «Проверить подключение» — проверка каждого DC (WebSocket ✓ или TCP fallback), доступна на главной и в настройках. Результат по каждому DC с цветовой индикацией.</li>
+          <li>Опция «Запускать при входе в Windows» в настройках: включение/выключение применяется сразу, ярлык создаётся или удаляется в папке автозагрузки, без установщика.</li>
+          <li>Единая тема оформления для всех экранов; настройки разбиты на блоки (Прокси, Дата-центры, Дополнительно) с подсказкой формата DC→IP.</li>
+          <li>Свои окна сообщений об ошибках и уведомлений вместо системного MessageBox — в одном стиле с приложением.</li>
+          <li>Закрытие окна по крестику сворачивает приложение в трей, а не завершает его. Выход — через пункт «Выход» в меню треи или кнопку в окне.</li>
+          <li>Первый запуск и настройки интегрированы в одно окно приложения.</li>
+        </ul>
+      </div>
+      <a href="#main" class="btn btn-secondary">Назад</a>
+    </section>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
